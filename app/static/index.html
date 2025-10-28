@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monitoramento da Qualidade do Ar</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+  <h1>Monitoramento da Qualidade do Ar</h1>
+  <button onclick="getAirQuality()">Obter Qualidade do Ar da Minha Localização</button>
+
+  <div class="card" id="results" style="display: none;">
+    <h2>🌿 Qualidade do Ar</h2>
+    <div class="parameter">AQI: <span id="aqi"></span></div>
+    <div class="parameter">Status: <span id="status"></span></div>
+    <div class="parameter">Recomendação: <span id="recommendation"></span></div>
+    <div class="parameter">PM2.5: <span id="pm2_5"></span> μg/m³</div>
+    <div class="parameter">PM10: <span id="pm10"></span> μg/m³</div>
+    <div class="parameter">CO: <span id="co"></span> μg/m³</div>
+    <div class="parameter">NO2: <span id="no2"></span> μg/m³</div>
+    <div class="parameter">SO2: <span id="so2"></span> μg/m³</div>
+  </div>
+
+  <script>
+    function setCardColor(aqi) {
+      const card = document.getElementById("results");
+      let color = "#2ecc71"; // Verde padrão
+      let icon = "🌿";
+
+      switch (aqi) {
+        case 1: color = "#2ecc71"; icon = "🌿"; break;
+        case 2: color = "#f1c40f"; icon = "🙂"; break;
+        case 3: color = "#e67e22"; icon = "😷"; break;
+        case 4: color = "#e74c3c"; icon = "🚫"; break;
+        case 5: color = "#8e44ad"; icon = "☠️"; break;
+        default: color = "#7f8c8d"; icon = "❓";
+      }
+
+      card.style.backgroundColor = color;
+      card.querySelector("h2").textContent = `${icon} Qualidade do Ar`;
+    }
+
+    async function getAirQuality() {
+      if (!navigator.geolocation) {
+        alert("Geolocalização não é suportada pelo seu navegador.");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
+        try {
+          const response = await fetch("/air-quality", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ latitude: lat, longitude: lon })
+          });
+
+          if (!response.ok) {
+            alert("Erro ao obter dados de qualidade do ar.");
+            return;
+          }
+
+          const data = await response.json();
+          document.getElementById("results").style.display = "block";
+          document.getElementById("aqi").textContent = data.aqi;
+          document.getElementById("status").textContent = data.status;
+          document.getElementById("recommendation").textContent = data.recommendation;
+          document.getElementById("pm2_5").textContent = data.pm2_5;
+          document.getElementById("pm10").textContent = data.pm10;
+          document.getElementById("co").textContent = data.co;
+          document.getElementById("no2").textContent = data.no2;
+          document.getElementById("so2").textContent = data.so2;
+
+          setCardColor(data.aqi);
+
+        } catch (error) {
+          console.error(error);
+          alert("Ocorreu um erro ao buscar os dados.");
+        }
+
+      }, () => {
+        alert("Não foi possível obter sua localização. Permissão negada?");
+      });
+    }
+
+    // Atualiza automaticamente a cada 5 minutos
+    setInterval(() => {
+      if (document.getElementById("results").style.display === "block") {
+        getAirQuality();
+      }
+    }, 300000);
+  </script>
+</body>
+
+</html>
