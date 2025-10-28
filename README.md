@@ -1,21 +1,40 @@
-# Monitoramento da Qualidade do Ar 🌿🌎
+# Monitoramento da Qualidade do Ar 🌿
 
-Um sistema web para monitoramento da qualidade do ar em tempo real, utilizando a API de poluição atmosférica da OpenWeatherMap.  
-O usuário pode obter os dados de sua localização e visualizar parâmetros como AQI, PM2.5, PM10, CO, NO2, SO2, além de recomendações de saúde baseadas no AQI.
-
----
-
-## Tecnologias Utilizadas
-
-- [Python 3.13](https://www.python.org/)
-- [FastAPI](https://fastapi.tiangolo.com/)
-- [HTTPX](https://www.python-httpx.org/)
-- [JavaScript / HTML / CSS](https://developer.mozilla.org/)
-- [OpenWeatherMap Air Pollution API](https://openweathermap.org/api/air-pollution)
+Este projeto permite monitorar a qualidade do ar em tempo real com base na sua localização. Ele exibe informações como AQI, PM2.5, PM10, CO, NO2 e SO2, e fornece status e recomendações de acordo com o índice de poluição.
 
 ---
 
-## Como Rodar Localmente
+## 🔹 Funcionalidades
+
+- Obter a qualidade do ar com base na geolocalização do usuário.
+- Exibir AQI (Air Quality Index) e poluentes principais.
+- Fornecer status visual e recomendações para atividades ao ar livre.
+- Atualização automática a cada 5 minutos.
+- Estilo responsivo e moderno, com cores indicativas do nível de poluição.
+
+---
+
+## 🛠 Tecnologias Utilizadas
+
+- **Frontend:** HTML, CSS, JavaScript  
+- **Backend:** Python, FastAPI  
+- **Servidor:** Uvicorn  
+- **API externa:** OpenWeatherMap Air Pollution API  
+- **Docker:** Para containerizar a aplicação
+
+---
+
+## 🚀 Como Rodar o Projeto
+
+### Pré-requisitos
+
+- Python 3.11 ou superior
+- Docker (opcional, mas recomendado para container)
+- Conta na [OpenWeatherMap](https://openweathermap.org/api) para obter a `API_KEY`
+
+---
+
+### Rodando localmente
 
 1. Clone o repositório:
 
@@ -23,52 +42,85 @@ O usuário pode obter os dados de sua localização e visualizar parâmetros com
 git clone https://github.com/Pontuego/monitoramento-ar-teste.git
 cd monitoramento-ar-teste
 
-Crie um ambiente virtual e instale dependências:
-python -m venv venv
-source venv/bin/activate  # Linux/macOS
-venv\Scripts\activate     # Windows
+2. Instale dependências:
+
+
+
 pip install -r requirements.txt
-Crie um arquivo .env na raiz do projeto com sua chave da API do OpenWeatherMap:
 
-API_KEY=SUA_CHAVE_AQUI
+3. Configure a variável de ambiente com sua API Key:
 
-Execute o backend:
-python -m uvicorn app.main:app --reload
 
-Abra no navegador:
+
+export API_KEY="SUA_CHAVE_AQUI"   # Linux / Mac
+setx API_KEY "SUA_CHAVE_AQUI"     # Windows
+
+4. Rode o backend:
+
+
+
+uvicorn app.main:app --reload
+
+5. Acesse o frontend no navegador:
+
+
+
 http://127.0.0.1:8000/static/index.html
 
-Funcionalidades
-Obter dados da qualidade do ar da localização do usuário.
 
-Exibir os principais poluentes: PM2.5, PM10, CO, NO2, SO2.
+---
 
-Mostrar AQI (Índice de Qualidade do Ar) com status e recomendações.
+Rodando com Docker
 
-Interface interativa, responsiva e visualmente agradável.
+1. Build da imagem:
 
-Gráfico radar (teia) para comparação rápida dos poluentes.
 
-Estrutura do Projeto
+
+docker build -t monitoramento-ar .
+
+2. Rodar o container:
+
+
+
+docker run -p 8000:8000 -e API_KEY=SUA_CHAVE_AQUI monitoramento-ar
+
+3. Acesse no navegador:
+
+
+
+http://localhost:8000/static/index.html
+
+
+---
+
+📦 Estrutura do Projeto
 
 monitoramento-ar-teste/
 │
 ├─ app/
-│  ├─ main.py           # Inicialização do FastAPI
-│  ├─ service.py        # Lógica de requisição da API e cálculo do AQI
-│  ├─ schemas.py        # Modelos de dados
-│  └─ static/
-│      ├─ index.html
-│      ├─ style.css
-│      └─ chart.js      # Código do gráfico radar
+│   ├─ main.py           # Backend FastAPI
+│   ├─ service.py        # Funções para buscar dados da API
+│   ├─ api.py            # Rotas da API
+│   └─ schemas.py        # Schemas de validação
 │
-├─ .env                 # Chave da API
-├─ requirements.txt     # Dependências do projeto
-└─ README.md
+├─ static/
+│   ├─ index.html        # Frontend
+│   └─ style.css         # CSS
+│
+├─ requirements.txt      # Dependências Python
+└─ Dockerfile            # Container Docker
 
-Futuras Melhorias
-Transformar em aplicativo mobile (Android/iOS).
 
-Melhorar gráficos e visualizações.
+---
 
-Adicionar alertas por poluentes críticos.
+⚠️ Observações
+
+Certifique-se de ter uma chave válida da OpenWeatherMap.
+
+O backend precisa estar rodando para que o frontend funcione corretamente.
+
+A aplicação usa geolocalização, portanto o navegador pedirá permissão para acessar sua localização.
+
+
+
+---
